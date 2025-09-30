@@ -704,40 +704,40 @@
 
         // Base de dados de perguntas unificadas
         const perguntasDatabase = {
-            recebimento: {
-                contentores: [
-                    "As eslingas estão livres de torções ou dobras?",
-                    "O contentor está livre de objetos soltos, que podem cair durante a movimentação de carga?",
-                    "O contentor está livre de sinais de vazamento?",
-                    "A tampa está devidamente fechada?",
-                    "As válvulas estão fechadas e lacradas?",
-                    "A validade dos testes (carga/hidrostático) é superior a 90 dias?",
-                    "As etiquetas de identificação estão em bom estado?",
-                    "Lacres Intactos?"
-                ],
-                "tambores-ibcs": [
-                    "As etiquetas estão legíveis e firmemente fixadas?",
-                    "Os recipientes estão limpos e livres de amassamentos?",
-                    "A quantidade recebida confere com a nota fiscal?",
-                    "Há sinais de vazamento ou corrosão?"
-                ]
-            },
-            expedicao: {
-                contentores: [
-                    "O contentor está limpo e seco internamente?",
-                    "Todas as tampas e válvulas estão perfeitamente fechadas?",
-                    "Os lacres de segurança estão aplicados e intactos?",
-                    "As etiquetas de risco e identificação do produto estão corretas e visíveis?",
-                    "A documentação (ficha de emergência, etc.) está acomodada no local adequado?"
-                ],
-                "tambores-ibcs": [
-                    "As etiquetas estão legíveis e firmemente fixadas?",
-                    "Os recipientes estão estáveis e paletizados corretamente?",
-                    "Há danos que possam comprometer o transporte?",
-                    "A quantidade a ser expedida confere com o pedido?"
-                ]
-            }
-        };
+    recebimento: {
+        contentores: [
+            "O contentor está limpo e seco internamente?",
+            "Todas as tampas e válvulas estão perfeitamente fechadas?",
+            "Os lacres de segurança estão aplicados e intactos?",
+            "As etiquetas de risco e identificação do produto estão corretas e visíveis?",
+            "A documentação (ficha de emergência, etc.) está acomodada no local adequado?"
+        ],
+        "tambores-ibcs": [
+            "As etiquetas estão legíveis e firmemente fixadas?",
+            "Os recipientes estão estáveis e paletizados corretamente?",
+            "Há danos que possam comprometer o transporte?",
+            "A quantidade a ser expedida confere com o pedido?"
+        ]
+    },
+    expedicao: {
+        contentores: [
+            "As eslingas estão livres de torções ou dobras?",
+            "O contentor está livre de objetos soltos, que podem cair durante a movimentação de carga?",
+            "O contentor está livre de sinais de vazamento?",
+            "A tampa está devidamente fechada?",
+            "As válvulas estão fechadas e lacradas?",
+            "A validade dos testes (carga/hidrostático) é superior a 90 dias?",
+            "As etiquetas de identificação estão em bom estado?",
+            "Lacres Intactos?"
+        ],
+        "tambores-ibcs": [
+            "As etiquetas estão legíveis e firmemente fixadas?",
+            "Os recipientes estão limpos e livres de amassamentos?",
+            "A quantidade recebida confere com a nota fiscal?",
+            "Há sinais de vazamento ou corrosão?"
+        ]
+    }
+};
        
         // Função para salvar dados no localStorage
         function saveToLocalStorage() {
