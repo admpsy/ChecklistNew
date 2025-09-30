@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Checklist Digital</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #757575;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 15px;
+            flex: 1;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background-color: var(--secondary-color);
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            flex: 1;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        
+        .nav-tab.active {
+            background-color: var(--primary-color);
+            border-bottom: 3px solid white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin: 15px 0 10px;
+        }
+        
+        h4 {
+            color: var(--dark-gray);
+            margin: 10px 0;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-option input {
+            width: auto;
+            margin-right: 5px;
+        }
+        
+        .checkbox-group {
+            margin: 10px 0;
+        }
+        
+        .checkbox-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .checkbox-item label {
+            flex: 1;
+            font-weight: normal;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .signature-pad {
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            height: 150px;
+            margin-bottom: 10px;
+            background-color: white;
+            position: relative;
+            touch-action: none;
+        }
+        
+        .signature-pad canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .photo-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .photo-item {
+            width: 100px;
+            height: 100px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .photo-item img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .photo-item .remove-photo {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .history-list {
+            list-style-type: none;
+        }
+        
+        .history-item {
+            background-color: var(--light-gray);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-item:hover {
+            background-color: var(--medium-gray);
+        }
+        
+        .history-item-info {
+            flex: 1;
+        }
+        
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .history-item-type {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .history-item-date {
+            color: var(--dark-gray);
+        }
+        
+        .history-item-status {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            color: white;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .status-approved {
+            background-color: var(--success-color);
+        }
+        
+        .status-rejected {
+            background-color: var(--danger-color);
+        }
+        
+        .status-released {
+            background-color: var(--success-color);
+        }
+        
+        .status-blocked {
+            background-color: var(--danger-color);
+        }
+        
+        .history-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            background-color: var(--success-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: opacity 0.3s;
+        }
+        
+        .notification.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+        
+        .filter-group label {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .filter-group select, .filter-group input {
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 20px;
+            color: var(--dark-gray);
+            font-style: italic;
+        }
+
+        /* Estilos para o rodapé */
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 30px;
+            border-top: 3px solid var(--secondary-color);
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .developer-info {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .developer-name {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .ai-developed {
+            font-style: italic;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .version {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        /* NOVO: Estilos para perguntas unificadas */
+        .pergunta-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid var(--medium-gray);
+            transition: border-color 0.3s;
+        }
+
+        .pergunta-item:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .pergunta-texto {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-gray);
+        }
+
+        .pergunta-fluxo {
+            font-size: 12px;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .pergunta-categoria {
+            font-size: 12px;
+            color: var(--dark-gray);
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            
+            .form-section {
+                padding: 20px;
+            }
+
+            .developer-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+            .developer-credits {
+                text-align: left;
+            }
+
+            .version {
+                text-align: right;
+            }
+        }
+    </style>
+    <!-- Biblioteca para geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Biblioteca para captura de assinatura -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+</head>
+<body>
+    <div class="notification hidden" id="notification">Checklist salvo com sucesso!</div>
+    
+    <header>
+        <h1>Sistema de Checklist Digital</h1>
+    </header>
+    
+    <div class="container">
+        <nav class="nav-tabs">
+            <a href="#" class="nav-tab active" data-tab="checklist">Checklist Unificado</a>
+            <a href="#" class="nav-tab" data-tab="historico">Histórico</a>
+        </nav>
+        
+        <!-- Tela Unificada de Checklist -->
+        <div id="checklist" class="tab-content active">
+            <h2>Checklist Unificado</h2>
+            
+            <div class="form-section">
+                <h3>Dados Gerais</h3>
+                <div class="form-group">
+                    <label for="fluxo-operacao">Fluxo da Operação: <span style="color: var(--danger-color)">*</span></label>
+                    <select id="fluxo-operacao" required>
+                        <option value="">Selecione o fluxo</option>
+                        <option value="recebimento">Recebimento</option>
+                        <option value="expedicao">Expedição</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="data">Data: <span style="color: var(--danger-color)">*</span></label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="form-group">
+                    <label for="responsavel">Responsável pela Inspeção: <span style="color: var(--danger-color)">*</span></label>
+                    <input type="text" id="responsavel" required>
+                </div>
+                <div class="form-group">
+                    <label for="tipo-carga">Tipo de Carga: <span style="color: var(--danger-color)">*</span></label>
+                    <select id="tipo-carga" required>
+                        <option value="">Selecione</option>
+                        <option value="contentores">Contentores</option>
+                        <option value="tambores-ibcs">Tambores/IBCs</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="produto">Produto:</label>
+                    <input type="text" id="produto" placeholder="Digite o produto">
+                </div>
+                <div class="form-group">
+                    <label for="lote">Lote:</label>
+                    <input type="text" id="lote" placeholder="Digite o lote">
+                </div>
+                <div class="form-group">
+                    <label for="lacres">Lacres:</label>
+                    <input type="text" id="lacres" placeholder="Digite os lacres">
+                </div>
+                <div class="form-group">
+                    <label for="validade-produto">Validade do Produto:</label>
+                    <input type="date" id="validade-produto">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Inspeção do Equipamento</h3>
+                <div class="form-group">
+                    <label for="serial-chassi">Serial / Chassi:</label>
+                    <input type="text" id="serial-chassi">
+                </div>
+                <div class="form-group">
+                    <label for="modelo-equipamento">Modelo do Equipamento:</label>
+                    <input type="text" id="modelo-equipamento">
+                </div>
+                <div class="form-group">
+                    <label for="validade-teste">Validade do Teste:</label>
+                    <input type="date" id="validade-teste">
+                </div>
+                <div class="form-group">
+                    <label for="gps-funcionando">GPS Funcionando:</label>
+                    <input type="text" id="gps-funcionando" placeholder="Descreva o status do GPS">
+                </div>
+            </div>
+
+            <!-- NOVA SEÇÃO: Perguntas Unificadas -->
+            <div class="form-section">
+                <h3>Perguntas do Checklist</h3>
+                <p style="margin-bottom: 15px; color: var(--dark-gray); font-style: italic;">
+                    Selecione o fluxo acima para carregar as perguntas específicas
+                </p>
+                
+                <div id="container-perguntas-unificadas">
+                    <!-- As perguntas serão carregadas dinamicamente aqui -->
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Conferência Final e Liberação</h3>
+                <div class="form-group">
+                    <label>Carga segura no veículo?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="carga-segura-sim" name="carga-segura" value="SIM">
+                            <label for="carga-segura-sim">SIM</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="carga-segura-nao" name="carga-segura" value="NÃO">
+                            <label for="carga-segura-nao">NÃO</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Documentação de transporte completa e correta?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="documentacao-sim" name="documentacao" value="SIM">
+                            <label for="documentacao-sim">SIM</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="documentacao-nao" name="documentacao" value="NÃO">
+                            <label for="documentacao-nao">NÃO</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Status da Operação: <span style="color: var(--danger-color)">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="status-aprovado-liberada" name="status-operacao" value="APROVADO/LIBERADA" required>
+                            <label for="status-aprovado-liberada">APROVADO/LIBERADA</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="status-reprovado-bloqueada" name="status-operacao" value="REPROVADO/BLOQUEADA">
+                            <label for="status-reprovado-bloqueada">REPROVADO/BLOQUEADA</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="observacoes-finais">Observações Finais:</label>
+                    <textarea id="observacoes-finais" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Assinatura do Responsável:</label>
+                    <div class="signature-pad" id="signature">
+                        <canvas id="signature-canvas"></canvas>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="clear-signature">Limpar Assinatura</button>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Fotos</h3>
+                <div class="form-group">
+                    <input type="file" id="foto" accept="image/*" multiple>
+                    <button type="button" class="btn btn-primary" id="add-foto">Adicionar Foto</button>
+                </div>
+                <div class="photo-container" id="fotos"></div>
+            </div>
+            
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" id="salvar">Salvar Checklist</button>
+                <button type="button" class="btn btn-warning" id="limpar">Limpar Formulário</button>
+            </div>
+        </div>
+        
+        <!-- Tela de Histórico -->
+        <div id="historico" class="tab-content">
+            <h2>Histórico de Checklists</h2>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filter-type">Fluxo:</label>
+                    <select id="filter-type">
+                        <option value="all">Todos</option>
+                        <option value="Recebimento">Recebimento</option>
+                        <option value="Expedição">Expedição</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-status">Status:</label>
+                    <select id="filter-status">
+                        <option value="all">Todos</option>
+                        <option value="APROVADO/LIBERADA">Aprovado/Liberada</option>
+                        <option value="REPROVADO/BLOQUEADA">Reprovado/Bloqueada</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-date">Data:</label>
+                    <input type="date" id="filter-date">
+                </div>
+                <button type="button" class="btn btn-primary" id="apply-filters">Aplicar Filtros</button>
+                <button type="button" class="btn btn-danger" id="clear-all-data">Limpar Todos os Dados</button>
+            </div>
+            
+            <div class="form-section">
+                <h3>Checklists Salvos</h3>
+                <ul class="history-list" id="history-list">
+                    <!-- Os itens do histórico serão adicionados dinamicamente aqui -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé com informações do desenvolvedor -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="developer-info">
+                <div class="developer-credits">
+                    <div class="developer-name">Desenvolvido por Aldemir Garbino</div>
+                    <div class="ai-developed">Sistema criado com assistência de Inteligência Artificial</div>
+                </div>
+                <div class="version">Versão 2.0 - 2024</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Variáveis para armazenar os dados
+        let checklists = [];
+        let signaturePad;
+        
+        // Chave para armazenamento local
+        const STORAGE_KEY = 'checklistDigitalData';
+
+        // Base de dados de perguntas unificadas
+        const perguntasDatabase = {
+            recebimento: {
+                contentores: [
+                    "As eslingas estão livres de torções ou dobras?",
+                    "O contentor está livre de objetos soltos, que podem cair durante a movimentação de carga?",
+                    "O contentor está livre de sinais de vazamento?",
+                    "A tampa está devidamente fechada?",
+                    "As válvulas estão fechadas e lacradas?",
+                    "A validade dos testes (carga/hidrostático) é superior a 90 dias?",
+                    "As etiquetas de identificação estão em bom estado?",
+                    "Lacres Intactos?"
+                ],
+                "tambores-ibcs": [
+                    "As etiquetas estão legíveis e firmemente fixadas?",
+                    "Os recipientes estão limpos e livres de amassamentos?",
+                    "A quantidade recebida confere com a nota fiscal?",
+                    "Há sinais de vazamento ou corrosão?"
+                ]
+            },
+            expedicao: {
+                contentores: [
+                    "O contentor está limpo e seco internamente?",
+                    "Todas as tampas e válvulas estão perfeitamente fechadas?",
+                    "Os lacres de segurança estão aplicados e intactos?",
+                    "As etiquetas de risco e identificação do produto estão corretas e visíveis?",
+                    "A documentação (ficha de emergência, etc.) está acomodada no local adequado?"
+                ],
+                "tambores-ibcs": [
+                    "As etiquetas estão legíveis e firmemente fixadas?",
+                    "Os recipientes estão estáveis e paletizados corretamente?",
+                    "Há danos que possam comprometer o transporte?",
+                    "A quantidade a ser expedida confere com o pedido?"
+                ]
+            }
+        };
+       
+        // Função para salvar dados no localStorage
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(checklists));
+                console.log('Dados salvos no localStorage. Total de checklists:', checklists.length);
+                return true;
+            } catch (e) {
+                console.error('Erro ao salvar no localStorage:', e);
+                showNotification('Erro ao salvar dados localmente. Os dados podem ser perdidos ao fechar o navegador.', 'error');
+                return false;
+            }
+        }
+
+        // Função para carregar dados do localStorage
+        function loadFromLocalStorage() {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    checklists = JSON.parse(savedData);
+                    console.log('Dados carregados do localStorage. Total de checklists:', checklists.length);
+                    return true;
+                } else {
+                    console.log('Nenhum dado encontrado no localStorage. Iniciando com array vazio.');
+                    checklists = [];
+                    return true;
+                }
+            } catch (e) {
+                console.error('Erro ao carregar do localStorage:', e);
+                showNotification('Erro ao carregar dados salvos. Iniciando com dados vazios.', 'error');
+                checklists = [];
+                return false;
+            }
+        }
+
+        // Inicialização após o carregamento da página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carregar dados do localStorage
+            loadFromLocalStorage();
+
+            // Inicializar a área de assinatura
+            initializeSignaturePad();
+            
+            // Configurar eventos
+            setupEventListeners();
+            
+            // Atualizar histórico
+            updateHistoryList();
+        });
+        
+        // Inicializar a área de assinatura
+        function initializeSignaturePad() {
+            const canvas = document.getElementById('signature-canvas');
+            
+            // Configurar canvas
+            function setupCanvas(canvas) {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+            }
+            
+            setupCanvas(canvas);
+            
+            // Inicializar signature pad
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)'
+            });
+        }
+        
+        // Configurar todos os event listeners
+        function setupEventListeners() {
+            // Navegação entre abas
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    switchTab(this.getAttribute('data-tab'));
+                });
+            });
+            
+            // Alternar entre tipos de carga
+            document.getElementById('tipo-carga').addEventListener('change', function() {
+                carregarPerguntasUnificadas();
+            });
+            
+            // Alternar entre fluxos de operação
+            document.getElementById('fluxo-operacao').addEventListener('change', function() {
+                carregarPerguntasUnificadas();
+            });
+            
+            // Adicionar fotos
+            document.getElementById('add-foto').addEventListener('click', function() {
+                addPhotos();
+            });
+            
+            // Limpar assinatura
+            document.getElementById('clear-signature').addEventListener('click', function() {
+                signaturePad.clear();
+            });
+            
+            // SALVAR CHECKLIST
+            document.getElementById('salvar').addEventListener('click', function() {
+                saveChecklist();
+            });
+            
+            // LIMPAR FORMULÁRIO
+            document.getElementById('limpar').addEventListener('click', function() {
+                clearForm();
+            });
+            
+            // Filtros
+            document.getElementById('apply-filters').addEventListener('click', function() {
+                updateHistoryList();
+            });
+            
+            // Limpar todos os dados
+            document.getElementById('clear-all-data').addEventListener('click', function() {
+                clearAllData();
+            });
+        }
+
+        // NOVA FUNÇÃO: Carregar perguntas unificadas
+        function carregarPerguntasUnificadas() {
+            const container = document.getElementById('container-perguntas-unificadas');
+            const fluxo = document.getElementById('fluxo-operacao').value;
+            const tipoCarga = document.getElementById('tipo-carga').value;
+            
+            container.innerHTML = '';
+            
+            if (!fluxo || !tipoCarga) {
+                container.innerHTML = '<p style="text-align: center; color: var(--dark-gray); font-style: italic;">Selecione o fluxo e tipo de carga para carregar as perguntas</p>';
+                return;
+            }
+            
+            const perguntas = perguntasDatabase[fluxo]?.[tipoCarga] || [];
+            
+            if (perguntas.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--dark-gray); font-style: italic;">Nenhuma pergunta encontrada para esta combinação</p>';
+                return;
+            }
+            
+            perguntas.forEach((pergunta, index) => {
+                const perguntaItem = document.createElement('div');
+                perguntaItem.className = 'pergunta-item';
+                perguntaItem.innerHTML = `
+                    <div class="pergunta-fluxo">${fluxo === 'recebimento' ? 'RECEBIMENTO' : 'EXPEDIÇÃO'}</div>
+                    <div class="pergunta-categoria">${tipoCarga === 'contentores' ? 'Contentores' : 'Tambores/IBCs'}</div>
+                    <div class="pergunta-texto">${pergunta}</div>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="pergunta-${index}-sim" name="pergunta-${index}" value="SIM" required>
+                            <label for="pergunta-${index}-sim">SIM</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="pergunta-${index}-nao" name="pergunta-${index}" value="NÃO">
+                            <label for="pergunta-${index}-nao">NÃO</label>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(perguntaItem);
+            });
+        }
+        
+        // Alternar entre abas
+        function switchTab(tabId) {
+            // Remove a classe active de todas as abas
+            document.querySelectorAll('.nav-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            // Adiciona a classe active à aba clicada
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Oculta todo o conteúdo das abas
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Mostra o conteúdo da aba clicada
+            document.getElementById(tabId).classList.add('active');
+            
+            // Se for a aba de histórico, atualizar a lista
+            if (tabId === 'historico') {
+                updateHistoryList();
+            }
+        }
+        
+        // Adicionar fotos
+        function addPhotos() {
+            const input = document.getElementById('foto');
+            const container = document.getElementById('fotos');
+            
+            if (input.files.length > 0) {
+                for (let i = 0; i < input.files.length; i++) {
+                    const file = input.files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const photoItem = document.createElement('div');
+                        photoItem.className = 'photo-item';
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-photo';
+                        removeBtn.innerHTML = '×';
+                        removeBtn.addEventListener('click', function() {
+                            container.removeChild(photoItem);
+                        });
+                        
+                        photoItem.appendChild(img);
+                        photoItem.appendChild(removeBtn);
+                        container.appendChild(photoItem);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+                
+                // Limpa o input para permitir adicionar mais fotos
+                input.value = '';
+            } else {
+                showNotification('Selecione pelo menos uma foto!', 'error');
+            }
+        }
+        
+        // LIMPAR FORMULÁRIO
+        function clearForm() {
+            // Reset do formulário
+            const form = document.getElementById('checklist');
+            const formElements = form.querySelectorAll('input, select, textarea');
+            
+            formElements.forEach(element => {
+                if (element.type === 'radio' || element.type === 'checkbox') {
+                    element.checked = false;
+                } else if (element.type === 'file') {
+                    // Não resetamos file inputs por questões de segurança
+                } else {
+                    element.value = '';
+                }
+            });
+            
+            // Limpar assinatura
+            signaturePad.clear();
+            
+            // Limpar fotos
+            document.getElementById('fotos').innerHTML = '';
+            
+            // Limpar perguntas
+            document.getElementById('container-perguntas-unificadas').innerHTML = 
+                '<p style="text-align: center; color: var(--dark-gray); font-style: italic;">Selecione o fluxo e tipo de carga para carregar as perguntas</p>';
+            
+            showNotification('Formulário limpo com sucesso!');
+        }
+        
+        // SALVAR CHECKLIST
+        function saveChecklist() {
+            console.log('Salvando checklist');
+            
+            // Validar campos obrigatórios
+            if (!validateForm()) {
+                showNotification('Preencha todos os campos obrigatórios!', 'error');
+                return;
+            }
+            
+            try {
+                const checklistData = collectChecklistData();
+                console.log('Dados coletados:', checklistData);
+                
+                checklists.push(checklistData);
+                
+                // Salvar no localStorage
+                saveToLocalStorage();
+                
+                // Atualizar histórico
+                updateHistoryList();
+                
+                showNotification(`Checklist de ${checklistData.tipo} salvo com sucesso!`);
+                
+                // Limpar formulário após salvar
+                clearForm();
+                
+            } catch (error) {
+                console.error('Erro ao salvar checklist:', error);
+                showNotification('Erro ao salvar checklist!', 'error');
+            }
+        }
+        
+        // Validar formulário
+        function validateForm() {
+            const form = document.getElementById('checklist');
+            
+            // Validar campos obrigatórios básicos
+            const requiredFields = form.querySelectorAll('[required]');
+            for (let field of requiredFields) {
+                if (!field.value.trim()) {
+                    field.focus();
+                    return false;
+                }
+            }
+            
+            // Validar fluxo selecionado
+            const fluxo = document.getElementById('fluxo-operacao').value;
+            if (!fluxo) {
+                showNotification('Selecione o fluxo da operação!', 'error');
+                return false;
+            }
+            
+            // Validar tipo de carga selecionado
+            const tipoCarga = document.getElementById('tipo-carga').value;
+            if (!tipoCarga) {
+                showNotification('Selecione o tipo de carga!', 'error');
+                return false;
+            }
+            
+            // Validar status selecionado
+            const statusSelected = form.querySelector('input[name="status-operacao"]:checked');
+            if (!statusSelected) {
+                showNotification('Selecione o status!', 'error');
+                return false;
+            }
+            
+            // Validar se todas as perguntas foram respondidas
+            const container = document.getElementById('container-perguntas-unificadas');
+            const perguntas = container.querySelectorAll('.pergunta-item');
+            for (let pergunta of perguntas) {
+                const resposta = pergunta.querySelector('input[type="radio"]:checked');
+                if (!resposta) {
+                    showNotification('Responda todas as perguntas do checklist!', 'error');
+                    pergunta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Coletar dados do formulário - ATUALIZADA
+        function collectChecklistData() {
+            const id = 'CHK' + Date.now();
+            const fluxo = document.getElementById('fluxo-operacao').value;
+            const data = document.getElementById('data').value;
+            const responsavel = document.getElementById('responsavel').value;
+            const tipoCarga = document.getElementById('tipo-carga').value;
+            const produto = document.getElementById('produto').value;
+            const lote = document.getElementById('lote').value;
+            const lacres = document.getElementById('lacres').value;
+            const validadeProduto = document.getElementById('validade-produto').value;
+            const serialChassi = document.getElementById('serial-chassi').value;
+            const modeloEquipamento = document.getElementById('modelo-equipamento').value;
+            const validadeTeste = document.getElementById('validade-teste').value;
+            const gpsFuncionando = document.getElementById('gps-funcionando').value;
+            const cargaSegura = document.querySelector('input[name="carga-segura"]:checked')?.value || 'NÃO INFORMADO';
+            const documentacao = document.querySelector('input[name="documentacao"]:checked')?.value || 'NÃO INFORMADO';
+            const status = document.querySelector('input[name="status-operacao"]:checked')?.value || 'NÃO DEFINIDO';
+            const observacoes = document.getElementById('observacoes-finais').value;
+            
+            // Coletar respostas das perguntas unificadas
+            const respostas = {};
+            const container = document.getElementById('container-perguntas-unificadas');
+            const perguntas = container.querySelectorAll('.pergunta-item');
+            
+            perguntas.forEach((perguntaItem, index) => {
+                const perguntaTexto = perguntaItem.querySelector('.pergunta-texto').textContent;
+                const resposta = perguntaItem.querySelector('input[type="radio"]:checked')?.value || 'NÃO RESPONDIDO';
+                respostas[perguntaTexto] = resposta;
+            });
+            
+            // Coletar fotos
+            const fotos = [];
+            const fotoElements = document.querySelectorAll('#fotos .photo-item img');
+            fotoElements.forEach(img => {
+                fotos.push(img.src);
+            });
+            
+            // Coletar assinatura
+            const assinatura = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
+            
+            return {
+                id,
+                tipo: fluxo === 'recebimento' ? 'Recebimento' : 'Expedição',
+                fluxo,
+                data,
+                responsavel,
+                tipoCarga,
+                produto,
+                lote,
+                lacres,
+                validadeProduto,
+                serialChassi,
+                modeloEquipamento,
+                validadeTeste,
+                gpsFuncionando,
+                cargaSegura,
+                documentacao,
+                respostas,
+                status,
+                observacoes,
+                assinatura,
+                fotos,
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Função para mostrar notificação
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification';
+            
+            if (type === 'error') {
+                notification.classList.add('error');
+            } else {
+                notification.classList.remove('error');
+            }
+            
+            setTimeout(() => {
+                notification.className = 'notification hidden';
+            }, 3000);
+        }
+        
+        // Função para gerar PDF
+        function generatePDF(checklistId) {
+            const checklist = checklists.find(c => c.id === checklistId);
+            if (!checklist) {
+                showNotification('Checklist não encontrado!', 'error');
+                return;
+            }
+            
+            // Usando a biblioteca jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Configurações
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 15;
+            let yPosition = margin;
+            
+            // Título
+            doc.setFontSize(20);
+            doc.setTextColor(74, 111, 165); // Cor primária
+            doc.text(`Checklist Digital - ${checklist.tipo}`, pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 15;
+            
+            // Informações básicas
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0); // Preto
+            doc.text(`ID do Checklist: ${checklist.id}`, margin, yPosition);
+            doc.text(`Data: ${checklist.data}`, pageWidth - margin, yPosition, { align: 'right' });
+            yPosition += 8;
+            
+            doc.text(`Responsável: ${checklist.responsavel}`, margin, yPosition);
+            doc.text(`Tipo de Carga: ${checklist.tipoCarga}`, pageWidth - margin, yPosition, { align: 'right' });
+            yPosition += 8;
+            
+            doc.text(`Produto: ${checklist.produto || 'Não informado'}`, margin, yPosition);
+            doc.text(`Lote: ${checklist.lote || 'Não informado'}`, pageWidth - margin, yPosition, { align: 'right' });
+            yPosition += 8;
+            
+            doc.text(`Lacres: ${checklist.lacres || 'Não informado'}`, margin, yPosition);
+            doc.text(`Validade do Produto: ${checklist.validadeProduto || 'Não informado'}`, pageWidth - margin, yPosition, { align: 'right' });
+            yPosition += 15;
+            
+            // Dados específicos do tipo de checklist
+            if (checklist.tipo === 'Recebimento') {
+                doc.text(`Serial/Chassi: ${checklist.serialChassi || 'Não informado'}`, margin, yPosition);
+                yPosition += 8;
+                doc.text(`Modelo do Equipamento: ${checklist.modeloEquipamento || 'Não informado'}`, margin, yPosition);
+                yPosition += 8;
+                doc.text(`Validade do Teste: ${checklist.validadeTeste || 'Não informado'}`, margin, yPosition);
+                yPosition += 8;
+                doc.text(`GPS Funcionando: ${checklist.gpsFuncionando || 'Não informado'}`, margin, yPosition);
+                yPosition += 15;
+            } else {
+                doc.text(`Carga Segura no Veículo: ${checklist.cargaSegura || 'Não informado'}`, margin, yPosition);
+                yPosition += 8;
+                doc.text(`Documentação Completa: ${checklist.documentacao || 'Não informado'}`, margin, yPosition);
+                yPosition += 15;
+            }
+            
+            // Respostas das perguntas
+            doc.setFontSize(14);
+            doc.setTextColor(74, 111, 165); // Cor primária
+            doc.text('Respostas do Checklist:', margin, yPosition);
+            yPosition += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0); // Preto
+            
+            for (const [pergunta, resposta] of Object.entries(checklist.respostas)) {
+                // Verificar se precisa de nova página
+                if (yPosition > 250) {
+                    doc.addPage();
+                    yPosition = margin;
+                }
+                
+                // Quebrar texto da pergunta se for muito longo
+                const lines = doc.splitTextToSize(pergunta, pageWidth - 2 * margin);
+                doc.text(lines, margin, yPosition);
+                yPosition += lines.length * 5;
+                
+                doc.text(`Resposta: ${resposta}`, margin + 5, yPosition);
+                yPosition += 10;
+            }
+            
+            // Status e observações
+            yPosition += 5;
+            doc.setFontSize(14);
+            doc.setTextColor(74, 111, 165); // Cor primária
+            doc.text('Status e Observações:', margin, yPosition);
+            yPosition += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0); // Preto
+            doc.text(`Status: ${checklist.status}`, margin, yPosition);
+            yPosition += 8;
+            
+            if (checklist.observacoes) {
+                const observacoesLines = doc.splitTextToSize(`Observações: ${checklist.observacoes}`, pageWidth - 2 * margin);
+                doc.text(observacoesLines, margin, yPosition);
+                yPosition += observacoesLines.length * 5;
+            }
+            
+            // Assinatura
+            if (checklist.assinatura) {
+                yPosition += 10;
+                doc.setFontSize(14);
+                doc.setTextColor(74, 111, 165); // Cor primária
+                doc.text('Assinatura do Responsável:', margin, yPosition);
+                yPosition += 10;
+                
+                // Adicionar a assinatura (4x4 cm)
+                const signatureWidth = 40; // 4cm em mm (aproximadamente)
+                const signatureHeight = 40; // 4cm em mm (aproximadamente)
+                doc.addImage(checklist.assinatura, 'PNG', margin, yPosition, signatureWidth, signatureHeight);
+                yPosition += signatureHeight + 10;
+            }
+            
+            // Fotos (4x4 cm cada)
+            if (checklist.fotos.length > 0) {
+                // Nova página para fotos
+                doc.addPage();
+                yPosition = margin;
+                
+                doc.setFontSize(14);
+                doc.setTextColor(74, 111, 165); // Cor primária
+                doc.text('Fotos do Checklist:', margin, yPosition);
+                yPosition += 15;
+                
+                const photoSize = 40; // 4x4 cm em mm
+                const photosPerRow = 2;
+                const photoMargin = 10;
+                
+                for (let i = 0; i < checklist.fotos.length; i++) {
+                    const row = Math.floor(i / photosPerRow);
+                    const col = i % photosPerRow;
+                    
+                    const x = margin + col * (photoSize + photoMargin);
+                    const y = yPosition + row * (photoSize + photoMargin);
+                    
+                    // Verificar se precisa de nova página
+                    if (y + photoSize > doc.internal.pageSize.getHeight() - margin) {
+                        doc.addPage();
+                        yPosition = margin;
+                        // Recalcular posição
+                        const newRow = Math.floor(i / photosPerRow) - row;
+                        const newY = yPosition + newRow * (photoSize + photoMargin);
+                        doc.addImage(checklist.fotos[i], 'JPEG', x, newY, photoSize, photoSize);
+                    } else {
+                        doc.addImage(checklist.fotos[i], 'JPEG', x, y, photoSize, photoSize);
+                    }
+                }
+            }
+            
+            // Salvar o PDF
+            doc.save(`checklist_${checklist.id}.pdf`);
+            showNotification('PDF gerado com sucesso!');
+        }
+        
+        // Função para atualizar a lista de histórico
+        function updateHistoryList() {
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            
+            // Aplicar filtros
+            const filterType = document.getElementById('filter-type').value;
+            const filterStatus = document.getElementById('filter-status').value;
+            const filterDate = document.getElementById('filter-date').value;
+            
+            const filteredChecklists = checklists.filter(checklist => {
+                // Filtro por tipo
+                if (filterType !== 'all' && checklist.tipo !== filterType) {
+                    return false;
+                }
+                
+                // Filtro por status
+                if (filterStatus !== 'all' && checklist.status !== filterStatus) {
+                    return false;
+                }
+                
+                // Filtro por data
+                if (filterDate && checklist.data !== filterDate) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // Ordenar por data (mais recente primeiro)
+            filteredChecklists.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Adicionar itens à lista
+            if (filteredChecklists.length === 0) {
+                historyList.innerHTML = '<li class="empty-message">Nenhum checklist encontrado</li>';
+            } else {
+                filteredChecklists.forEach(checklist => {
+                    const historyItem = document.createElement('li');
+                    historyItem.className = 'history-item';
+                    
+                    const dateStr = checklist.data || new Date(checklist.timestamp).toLocaleDateString('pt-BR');
+                    
+                    let statusClass = '';
+                    if (checklist.status === 'APROVADO/LIBERADA') {
+                        statusClass = 'status-approved';
+                    } else {
+                        statusClass = 'status-rejected';
+                    }
+                    
+                    historyItem.innerHTML = `
+                        <div class="history-item-info">
+                            <div class="history-item-header">
+                                <span class="history-item-type">${checklist.tipo} - ${checklist.tipoCarga || 'Tipo não definido'}</span>
+                                <span class="history-item-date">${dateStr}</span>
+                            </div>
+                            <div>
+                                <span>Responsável: ${checklist.responsavel || 'Não informado'}</span>
+                                <span class="history-item-status ${statusClass}">${checklist.status}</span>
+                            </div>
+                        </div>
+                        <div class="history-item-actions">
+                            <button class="btn btn-success btn-small" onclick="generatePDF('${checklist.id}')">Gerar PDF</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteChecklist('${checklist.id}')">Excluir</button>
+                        </div>
+                    `;
+                    
+                    historyList.appendChild(historyItem);
+                });
+            }
+        }
+        
+        // Função para excluir um checklist
+        function deleteChecklist(checklistId) {
+            if (confirm('Tem certeza que deseja excluir este checklist?')) {
+                checklists = checklists.filter(c => c.id !== checklistId);
+                saveToLocalStorage();
+                updateHistoryList();
+                showNotification('Checklist excluído com sucesso!');
+            }
+        }
+        
+        // Limpar todos os dados
+        function clearAllData() {
+            if (confirm('Tem certeza que deseja excluir todos os checklists salvos? Esta ação não pode ser desfeita.')) {
+                checklists = [];
+                saveToLocalStorage();
+                updateHistoryList();
+                showNotification('Todos os dados foram excluídos!');
+            }
+        }
+    </script>
+</body>
+</html>
