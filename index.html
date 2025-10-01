@@ -632,7 +632,7 @@
                     <input type="date" id="validade-teste">
                 </div>
                 <div class="form-group">
-                    <label for="gps-funcionando">GPS:</label>
+                    <label for="gps">GPS:</label>
                     <input type="text" id="gps" placeholder="Número GPS">
                 </div>
                 
@@ -973,8 +973,6 @@
                             <input type="radio" id="tipo-Expedição" name="tipo-operacao" value="Expedição">
                             <label for="tipo-Expedição">Expedição</label>
                         </div>
-                        
-                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -1026,9 +1024,8 @@
                     <label for="filter-type">Tipo:</label>
                     <select id="filter-type">
                         <option value="all">Todos</option>
-                        <option value="Entrada">Recebimento</option>
-                        <option value="Saída">Expedição</option>
-                        
+                        <option value="Recebimento">Recebimento</option>
+                        <option value="Expedição">Expedição</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -1171,7 +1168,9 @@
             
             // LIMPAR FORMULÁRIO
             document.getElementById('limpar').addEventListener('click', function() {
-                clearForm();
+                if (confirm('Tem certeza que deseja limpar todos os dados do formulário?')) {
+                    clearForm();
+                }
             });
             
             // Filtros
@@ -1303,27 +1302,169 @@
             document.getElementById('inspecao-pre-contentores').style.display = 'none';
             document.getElementById('inspecao-pre-tambores').style.display = 'none';
             
-            showNotification('Formulário Salvo com Sucesso!');
+            showNotification('Formulário limpo com sucesso!');
         }
         
+        // SALVAR CHECKLIST - FUNÇÃO CORRIGIDA
         function saveChecklist() {
-    console.log('Salvando checklist');
-    
-    // Validar campos obrigatórios
-    if (!validateForm()) {
-        showNotification('Preencha os campos obrigatórios!', 'error');
-        return;
-    }
-    
-    // Validar assinatura
-    if (signaturePad.isEmpty()) {
-        if (!confirm('Nenhuma assinatura foi registrada. Deseja continuar mesmo assim?')) {
-            return;
+            console.log('Salvando checklist');
+            
+            // Validar campos obrigatórios
+            if (!validateForm()) {
+                showNotification('Preencha os campos obrigatórios!', 'error');
+                return;
+            }
+            
+            // Validar assinatura
+            if (signaturePad.isEmpty()) {
+                if (!confirm('Nenhuma assinatura foi registrada. Deseja continuar mesmo assim?')) {
+                    return;
+                }
+            }
+            
+            try {
+                const checklistData = collectChecklistData();
+                console.log('Dados coletados:', checklistData);
+                
+                checklists.push(checklistData);
+                
+                // Salvar no localStorage
+                if (saveToLocalStorage()) {
+                    showNotification(`Checklist Salvo com Sucesso! ID: ${checklistData.id}`);
+                    
+                    // Atualizar histórico
+                    updateHistoryList();
+                    
+                    // Limpar formulário após salvar
+                    clearForm();
+                } else {
+                    showNotification('Erro ao salvar dados localmente!', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao salvar checklist:', error);
+                showNotification('Erro ao salvar checklist!', 'error');
+            }
         }
-    }
-    
-    try {
-        const checklistData = collectChec
+        
+        // Validar formulário - CORRIGIDA
+        function validateForm() {
+            const data = document.getElementById('data').value;
+            const responsavel = document.getElementById('responsavel').value;
+            const tipoCarga = document.getElementById('tipo-carga').value;
+            const tipoOperacao = document.querySelector('input[name="tipo-operacao"]:checked');
+            const statusSelected = document.querySelector('input[name="status-operacao"]:checked');
+            
+            let isValid = true;
+            let errorMessage = '';
+            
+            if (!data) {
+                errorMessage = 'Informe a data!';
+                isValid = false;
+            } else if (!responsavel.trim()) {
+                errorMessage = 'Informe o responsável!';
+                isValid = false;
+            } else if (!tipoCarga) {
+                errorMessage = 'Selecione o tipo de carga!';
+                isValid = false;
+            } else if (!tipoOperacao) {
+                errorMessage = 'Selecione o tipo de operação!';
+                isValid = false;
+            } else if (!statusSelected) {
+                errorMessage = 'Selecione o status!';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                showNotification(errorMessage, 'error');
+            }
+            
+            return isValid;
+        }
+        
+        // COLETAR DADOS DO FORMULÁRIO - FUNÇÃO CORRIGIDA
+        function collectChecklistData() {
+            const id = 'CHK' + Date.now();
+            const cliente = document.getElementById('cliente').value;
+            const data = document.getElementById('data').value;
+            const responsavel = document.getElementById('responsavel').value;
+            const tipoCarga = document.getElementById('tipo-carga').value;
+            const produto = document.getElementById('produto').value;
+            const lote = document.getElementById('lote').value;
+            const lacres = document.getElementById('lacres').value;
+            const validadeProduto = document.getElementById('validade-produto').value;
+            const serialChassi = document.getElementById('serial-chassi').value;
+            const modeloEquipamento = document.getElementById('modelo-equipamento').value;
+            const validadeTeste = document.getElementById('validade-teste').value;
+            const gps = document.getElementById('gps').value; // CORRIGIDO: campo correto
+            const eslingaNumeracao = document.getElementById('eslinga-numeracao').value;
+            const eslingaValidade = document.getElementById('eslinga-validade').value;
+            const cargaSegura = document.querySelector('input[name="carga-segura"]:checked')?.value || 'NÃO INFORMADO';
+            const documentacao = document.querySelector('input[name="documentacao"]:checked')?.value || 'NÃO INFORMADO';
+            const tipoOperacao = document.querySelector('input[name="tipo-operacao"]:checked')?.value || 'NÃO DEFINIDO';
+            const status = document.querySelector('input[name="status-operacao"]:checked')?.value || 'NÃO DEFINIDO';
+            const observacoes = document.getElementById('observacoes-finais').value;
+            
+            // Coletar respostas das perguntas de INSPEÇÃO DA CARGA TGR
+            const respostasInspecaoCarga = {};
+            const perguntasInspecao = document.querySelectorAll('#inspecao-contentores .checkbox-item, #inspecao-tambores .checkbox-item');
+            perguntasInspecao.forEach((pergunta) => {
+                if (pergunta.offsetParent !== null) {
+                    const label = pergunta.querySelector('label').textContent.trim();
+                    const resposta = pergunta.querySelector('input[type="radio"]:checked')?.value || 'NÃO RESPONDIDO';
+                    respostasInspecaoCarga[label] = resposta;
+                }
+            });
+            
+            // Coletar respostas das perguntas de INSPEÇÃO TGR
+            const respostasInspecaoTGR = {};
+            const perguntasPre = document.querySelectorAll('#inspecao-pre-contentores .checkbox-item, #inspecao-pre-tambores .checkbox-item');
+            perguntasPre.forEach((pergunta) => {
+                if (pergunta.offsetParent !== null) {
+                    const label = pergunta.querySelector('label').textContent.trim();
+                    const resposta = pergunta.querySelector('input[type="radio"]:checked')?.value || 'NÃO RESPONDIDO';
+                    respostasInspecaoTGR[label] = resposta;
+                }
+            });
+            
+            // Coletar fotos
+            const fotos = [];
+            const fotoElements = document.querySelectorAll('#fotos .photo-item img');
+            fotoElements.forEach(img => {
+                fotos.push(img.src);
+            });
+            
+            // Coletar assinatura
+            const assinatura = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
+            
+            return {
+                id,
+                tipo: tipoOperacao,
+                cliente,
+                data,
+                responsavel,
+                tipoCarga,
+                produto,
+                lote,
+                lacres,
+                validadeProduto,
+                serialChassi,
+                modeloEquipamento,
+                validadeTeste,
+                gps, // CORRIGIDO
+                eslingaNumeracao,
+                eslingaValidade,
+                cargaSegura,
+                documentacao,
+                respostasInspecaoCarga, // Nome mais claro
+                respostasInspecaoTGR,   // Nome mais claro
+                status,
+                observacoes,
+                assinatura,
+                fotos,
+                timestamp: new Date().toISOString()
+            };
+        }
         
         // Função para mostrar notificação
         function showNotification(message, type = 'success') {
@@ -1458,14 +1599,14 @@
             doc.text(`Serial/Chassi: ${checklist.serialChassi || 'Não informado'}`, col1, yPosition);
             doc.text(`Modelo: ${checklist.modeloEquipamento || 'Não informado'}`, col2, yPosition);
             yPosition += 8;
-            doc.text(`GPS: ${checklist.gpsFuncionando || 'Não informado'}`, col1, yPosition);
+            doc.text(`GPS: ${checklist.gps || 'Não informado'}`, col1, yPosition); // CORRIGIDO
             yPosition += 20;
 
             // Respostas das perguntas - INSPEÇÃO DA CARGA TGR
             let currentPage = 1;
             let totalPages = 1;
 
-            if (Object.keys(checklist.respostasInspecao).length > 0) {
+            if (Object.keys(checklist.respostasInspecaoCarga).length > 0) {
                 doc.setFontSize(12);
                 doc.setTextColor(255, 153, 0);
                 doc.text('INSPEÇÃO DA CARGA TGR:', margin, yPosition);
@@ -1474,7 +1615,7 @@
                 doc.setFontSize(9);
                 doc.setTextColor(0, 0, 0);
 
-                for (const [pergunta, resposta] of Object.entries(checklist.respostasInspecao)) {
+                for (const [pergunta, resposta] of Object.entries(checklist.respostasInspecaoCarga)) {
                     // Verificar se precisa de nova página
                     if (yPosition > pageHeight - 50) {
                         currentPage++;
@@ -1503,7 +1644,7 @@
             }
 
             // Respostas das perguntas - INSPEÇÃO TGR
-            if (Object.keys(checklist.respostasTGR).length > 0) {
+            if (Object.keys(checklist.respostasInspecaoTGR).length > 0) {
                 // Verificar se precisa de nova página
                 if (yPosition > pageHeight - 50) {
                     currentPage++;
@@ -1518,7 +1659,7 @@
                 doc.setFontSize(9);
                 doc.setTextColor(0, 0, 0);
 
-                for (const [pergunta, resposta] of Object.entries(checklist.respostasTGR)) {
+                for (const [pergunta, resposta] of Object.entries(checklist.respostasInspecaoTGR)) {
                     // Verificar se precisa de nova página
                     if (yPosition > pageHeight - 50) {
                         currentPage++;
@@ -1693,72 +1834,78 @@
         // Função para atualizar a lista de histórico
         function updateHistoryList() {
             const historyList = document.getElementById('history-list');
-            historyList.innerHTML = '';
             
-            // Aplicar filtros
-            const filterType = document.getElementById('filter-type').value;
-            const filterStatus = document.getElementById('filter-status').value;
-            const filterDate = document.getElementById('filter-date').value;
-            
-            const filteredChecklists = checklists.filter(checklist => {
-                // Filtro por tipo
-                if (filterType !== 'all' && checklist.tipo !== filterType) {
-                    return false;
-                }
+            try {
+                historyList.innerHTML = '';
                 
-                // Filtro por status
-                if (filterStatus !== 'all' && checklist.status !== filterStatus) {
-                    return false;
-                }
+                // Aplicar filtros
+                const filterType = document.getElementById('filter-type').value;
+                const filterStatus = document.getElementById('filter-status').value;
+                const filterDate = document.getElementById('filter-date').value;
                 
-                // Filtro por data
-                if (filterDate && checklist.data !== filterDate) {
-                    return false;
-                }
-                
-                return true;
-            });
-            
-            // Ordenar por data (mais recente primeiro)
-            filteredChecklists.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
-            // Adicionar itens à lista
-            if (filteredChecklists.length === 0) {
-                historyList.innerHTML = '<li class="empty-message">Nenhum checklist encontrado</li>';
-            } else {
-                filteredChecklists.forEach(checklist => {
-                    const historyItem = document.createElement('li');
-                    historyItem.className = 'history-item';
-                    
-                    const dateStr = checklist.data || new Date(checklist.timestamp).toLocaleDateString('pt-BR');
-                    
-                    let statusClass = '';
-                    if (checklist.status === 'APROVADO/LIBERADA') {
-                        statusClass = 'status-approved';
-                    } else {
-                        statusClass = 'status-rejected';
+                const filteredChecklists = checklists.filter(checklist => {
+                    // Filtro por tipo
+                    if (filterType !== 'all' && checklist.tipo !== filterType) {
+                        return false;
                     }
                     
-                    historyItem.innerHTML = `
-                        <div class="history-item-info">
-                            <div class="history-item-header">
-                                <span class="history-item-type">${checklist.tipo} - ${checklist.tipoCarga || 'Tipo não definido'}</span>
-                                <span class="history-item-date">${dateStr}</span>
-                            </div>
-                            <div>
-                                <span>Cliente: ${checklist.cliente || 'Não informado'}</span> | 
-                                <span>Responsável: ${checklist.responsavel || 'Não informado'}</span>
-                                <span class="history-item-status ${statusClass}">${checklist.status}</span>
-                            </div>
-                        </div>
-                        <div class="history-item-actions">
-                            <button class="btn btn-success btn-small" onclick="generatePDF('${checklist.id}')">Exportar PDF</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteChecklist('${checklist.id}')">Excluir</button>
-                        </div>
-                    `;
+                    // Filtro por status
+                    if (filterStatus !== 'all' && checklist.status !== filterStatus) {
+                        return false;
+                    }
                     
-                    historyList.appendChild(historyItem);
+                    // Filtro por data
+                    if (filterDate && checklist.data !== filterDate) {
+                        return false;
+                    }
+                    
+                    return true;
                 });
+                
+                // Ordenar por data (mais recente primeiro)
+                filteredChecklists.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                // Adicionar itens à lista
+                if (filteredChecklists.length === 0) {
+                    historyList.innerHTML = '<li class="empty-message">Nenhum checklist encontrado</li>';
+                } else {
+                    filteredChecklists.forEach(checklist => {
+                        const historyItem = document.createElement('li');
+                        historyItem.className = 'history-item';
+                        
+                        const dateStr = checklist.data || new Date(checklist.timestamp).toLocaleDateString('pt-BR');
+                        
+                        let statusClass = '';
+                        if (checklist.status === 'APROVADO/LIBERADA') {
+                            statusClass = 'status-approved';
+                        } else {
+                            statusClass = 'status-rejected';
+                        }
+                        
+                        historyItem.innerHTML = `
+                            <div class="history-item-info">
+                                <div class="history-item-header">
+                                    <span class="history-item-type">${checklist.tipo} - ${checklist.tipoCarga || 'Tipo não definido'}</span>
+                                    <span class="history-item-date">${dateStr}</span>
+                                </div>
+                                <div>
+                                    <span>Cliente: ${checklist.cliente || 'Não informado'}</span> | 
+                                    <span>Responsável: ${checklist.responsavel || 'Não informado'}</span>
+                                    <span class="history-item-status ${statusClass}">${checklist.status}</span>
+                                </div>
+                            </div>
+                            <div class="history-item-actions">
+                                <button class="btn btn-success btn-small" onclick="generatePDF('${checklist.id}')">Exportar PDF</button>
+                                <button class="btn btn-danger btn-small" onclick="deleteChecklist('${checklist.id}')">Excluir</button>
+                            </div>
+                        `;
+                        
+                        historyList.appendChild(historyItem);
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar histórico:', error);
+                historyList.innerHTML = '<li class="empty-message">Erro ao carregar histórico</li>';
             }
         }
         
