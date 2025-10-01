@@ -1481,45 +1481,7 @@ function collectChecklistData() {
         timestamp: new Date().toISOString()
     };
 }
-            
-            // Coletar fotos
-            const fotos = [];
-            const fotoElements = document.querySelectorAll('#fotos .photo-item img');
-            fotoElements.forEach(img => {
-                fotos.push(img.src);
-            });
-            
-            // Coletar assinatura
-            const assinatura = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
-            
-            return {
-                id,
-                tipo: tipoOperacao === 'recebimento' ? 'Recebimento' : 'Expedição',
-                cliente, // Novo campo
-                data,
-                responsavel,
-                tipoCarga,
-                produto,
-                lote,
-                lacres,
-                validadeProduto,
-                serialChassi,
-                modeloEquipamento,
-                validadeTeste,
-                gpsFuncionando,
-                eslingaNumeracao, // Novo campo
-                eslingaValidade, // Novo campo
-                cargaSegura,
-                documentacao,
-                respostas,
-                status,
-                observacoes,
-                assinatura,
-                fotos,
-                timestamp: new Date().toISOString()
-            };
-        }
-        
+                  
         // Função para mostrar notificação
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
