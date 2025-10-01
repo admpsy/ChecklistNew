@@ -1306,158 +1306,24 @@
             showNotification('Formulário Salvo com Sucesso!');
         }
         
-        // SALVAR CHECKLIST
         function saveChecklist() {
-            console.log('Salvando checklist');
-            
-            // Validar campos obrigatórios (apenas os essenciais)
-            if (!validateForm()) {
-                showNotification('Preencha os campos obrigatórios!', 'error');
-                return;
-            }
-            
-            try {
-                const checklistData = collectChecklistData();
-                console.log('Dados coletados:', checklistData);
-                
-                checklists.push(checklistData);
-                
-                // Salvar no localStorage
-                saveToLocalStorage();
-                
-                // Atualizar histórico
-                updateHistoryList();
-                
-                showNotification(`Checklist Salvo com Sucesso!`);
-                
-                // Limpar formulário após salvar
-                clearForm();
-                
-            } catch (error) {
-                console.error('Erro ao salvar checklist:', error);
-                showNotification('Erro ao salvar checklist!', 'error');
-            }
+    console.log('Salvando checklist');
+    
+    // Validar campos obrigatórios
+    if (!validateForm()) {
+        showNotification('Preencha os campos obrigatórios!', 'error');
+        return;
+    }
+    
+    // Validar assinatura
+    if (signaturePad.isEmpty()) {
+        if (!confirm('Nenhuma assinatura foi registrada. Deseja continuar mesmo assim?')) {
+            return;
         }
-        
-        // Validar formulário - CORRIGIDA (apenas campos essenciais)
-        function validateForm() {
-            const data = document.getElementById('data').value;
-            const responsavel = document.getElementById('responsavel').value;
-            const tipoCarga = document.getElementById('tipo-carga').value;
-            const tipoOperacao = document.querySelector('input[name="tipo-operacao"]:checked');
-            const statusSelected = document.querySelector('input[name="status-operacao"]:checked');
-            
-            if (!data) {
-                showNotification('Informe a data!', 'error');
-                return false;
-            }
-            
-            if (!responsavel.trim()) {
-                showNotification('Informe o responsável!', 'error');
-                return false;
-            }
-            
-            if (!tipoCarga) {
-                showNotification('Selecione o tipo de carga!', 'error');
-                return false;
-            }
-            
-            if (!tipoOperacao) {
-                showNotification('Selecione o tipo de operação!', 'error');
-                return false;
-            }
-            
-            if (!statusSelected) {
-                showNotification('Selecione o status!', 'error');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // Coletar dados do formulário - ATUALIZADA
-        function collectChecklistData() {
-            const id = 'CHK' + Date.now();
-            const cliente = document.getElementById('cliente').value;
-            const data = document.getElementById('data').value;
-            const responsavel = document.getElementById('responsavel').value;
-            const tipoCarga = document.getElementById('tipo-carga').value;
-            const produto = document.getElementById('produto').value;
-            const lote = document.getElementById('lote').value;
-            const lacres = document.getElementById('lacres').value;
-            const validadeProduto = document.getElementById('validade-produto').value;
-            const serialChassi = document.getElementById('serial-chassi').value;
-            const modeloEquipamento = document.getElementById('modelo-equipamento').value;
-            const validadeTeste = document.getElementById('validade-teste').value;
-            const gpsFuncionando = document.getElementById('gps-funcionando').value;
-            const eslingaNumeracao = document.getElementById('eslinga-numeracao').value;
-            const eslingaValidade = document.getElementById('eslinga-validade').value;
-            const cargaSegura = document.querySelector('input[name="carga-segura"]:checked')?.value || 'NÃO INFORMADO';
-            const documentacao = document.querySelector('input[name="documentacao"]:checked')?.value || 'NÃO INFORMADO';
-            const tipoOperacao = document.querySelector('input[name="tipo-operacao"]:checked')?.value || 'NÃO DEFINIDO';
-            const status = document.querySelector('input[name="status-operacao"]:checked')?.value || 'NÃO DEFINIDO';
-            const observacoes = document.getElementById('observacoes-finais').value;
-            
-            // Coletar respostas das perguntas de INSPEÇÃO DA CARGA
-            const respostasInspecao = {};
-            const perguntasInspecao = document.querySelectorAll('#inspecao-contentores .checkbox-item, #inspecao-tambores .checkbox-item');
-            perguntasInspecao.forEach((pergunta) => {
-                if (pergunta.offsetParent !== null) { // Verifica se está visível
-                    const label = pergunta.querySelector('label').textContent;
-                    const resposta = pergunta.querySelector('input[type="radio"]:checked')?.value || 'NÃO RESPONDIDO';
-                    respostasInspecao[label] = resposta;
-                }
-            });
-            
-            // Coletar respostas das perguntas de INSPEÇÃO TGR
-            const respostasPreOperacional = {};
-            const perguntasPre = document.querySelectorAll('#inspecao-pre-contentores .checkbox-item, #inspecao-pre-tambores .checkbox-item');
-            perguntasPre.forEach((pergunta) => {
-                if (pergunta.offsetParent !== null) { // Verifica se está visível
-                    const label = pergunta.querySelector('label').textContent;
-                    const resposta = pergunta.querySelector('input[type="radio"]:checked')?.value || 'NÃO RESPONDIDO';
-                    respostasPreOperacional[label] = resposta;
-                }
-            });
-            
-            // Coletar fotos
-            const fotos = [];
-            const fotoElements = document.querySelectorAll('#fotos .photo-item img');
-            fotoElements.forEach(img => {
-                fotos.push(img.src);
-            });
-            
-            // Coletar assinatura
-            const assinatura = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
-            
-            return {
-                id,
-                tipo: tipoOperacao,
-                cliente,
-                data,
-                responsavel,
-                tipoCarga,
-                produto,
-                lote,
-                lacres,
-                validadeProduto,
-                serialChassi,
-                modeloEquipamento,
-                validadeTeste,
-                gpsFuncionando,
-                eslingaNumeracao,
-                eslingaValidade,
-                cargaSegura,
-                documentacao,
-                respostasInspecao,
-                respostasPreOperacional,
-                status,
-                observacoes,
-                assinatura,
-                fotos,
-                timestamp: new Date().toISOString()
-            };
-        }
+    }
+    
+    try {
+        const checklistData = collectChec
         
         // Função para mostrar notificação
         function showNotification(message, type = 'success') {
