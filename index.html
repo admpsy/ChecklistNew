@@ -39,25 +39,40 @@
         header {
             background-color: var(--secondary-color);
             color: white;
-            padding: 15px 0;
+            padding: 15px 20px;
             text-align: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            min-height: 80px;
         }
         
         .logo-container {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .logo {
             height: 40px;
             width: auto;
+            max-width: 120px;
+        }
+        
+        .header-title {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .header-title h1 {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            margin: 0;
+            line-height: 1.2;
         }
         
         .nav-tabs {
@@ -77,6 +92,7 @@
             white-space: nowrap;
             cursor: pointer;
             font-weight: 600;
+            min-width: 140px;
         }
         
         .nav-tab.active {
@@ -411,7 +427,79 @@
             min-width: 200px;
         }
         
-        @media (min-width: 768px) {
+        /* Media Queries para Responsividade */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px 10px;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .logo-container {
+                order: 1;
+            }
+            
+            .header-title {
+                order: 2;
+                min-width: 100%;
+            }
+            
+            .header-title h1 {
+                font-size: 1.4rem;
+            }
+            
+            .logo {
+                height: 35px;
+            }
+            
+            .nav-tab {
+                padding: 10px 15px;
+                min-width: 120px;
+                font-size: 14px;
+            }
+            
+            .tab-content {
+                padding: 15px;
+            }
+            
+            .form-section {
+                padding: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header-title h1 {
+                font-size: 1.2rem;
+            }
+            
+            .logo {
+                height: 30px;
+            }
+            
+            .nav-tab {
+                padding: 8px 12px;
+                min-width: 100px;
+                font-size: 12px;
+            }
+            
+            .btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .history-item-actions {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (min-width: 769px) {
             .container {
                 max-width: 900px;
                 margin: 0 auto;
@@ -419,6 +507,19 @@
             
             .form-section {
                 padding: 20px;
+            }
+            
+            header {
+                justify-content: space-between;
+                padding: 15px 30px;
+            }
+            
+            .logo-container {
+                flex: 0 0 auto;
+            }
+            
+            .header-title {
+                flex: 1;
             }
         }
     </style>
@@ -428,7 +529,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
 </head>
 <body>
-    <div class="notification hidden" id="notification">Checklist salvo com sucesso!</div>
+    <div class="notification hidden" id="notification">Checklist registrado com sucesso!</div>
     
     <header>
         <div class="logo-container">
@@ -440,14 +541,19 @@
                 </svg>
             </div>
         </div>
-        <h1>Sistema de Checklist Digital</h1>
+        <div class="header-title">
+            <h1>Sistema de Checklist Digital</h1>
+        </div>
     </header>
     
+    <!-- O resto do código permanece igual -->
     <div class="container">
         <nav class="nav-tabs">
             <a href="#" class="nav-tab active" data-tab="recebimento-expedicao">Recebimento / Expedição</a>
             <a href="#" class="nav-tab" data-tab="historico">Histórico</a>
         </nav>
+        
+        <!-- Resto do conteúdo... -->
         
         <!-- Tela Unificada de Recebimento/Expedição -->
         <div id="recebimento-expedicao" class="tab-content active">
@@ -519,7 +625,7 @@
                 </div>
                 <div class="form-group">
                     <label for="gps-funcionando">GPS Funcionando:</label>
-                    <input type="text" id="gps-funcionando" placeholder="Descreva o status do GPS">
+                    <input type="text" id="gps-funcionando" placeholder="Número do GPS">
                 </div>
                 
                 <!-- Novo campo: Eslinga -->
@@ -1128,20 +1234,21 @@
         
         // Alternar entre tipos de operação - CORRIGIDA
         function toggleOperacaoType(tipoOperacao) {
-            const secaoInspecaoCarga = document.getElementById('secao-inspecao-carga');
-            const secaoInspecaoExpedicao = document.getElementById('secao-inspecao-expedicao');
-            
-            if (tipoOperacao === 'recebimento') {
-                secaoInspecaoCarga.style.display = 'block';
-                secaoInspecaoExpedicao.style.display = 'none';
-            } else if (tipoOperacao === 'expedicao') {
-                secaoInspecaoCarga.style.display = 'none';
-                secaoInspecaoExpedicao.style.display = 'block';
-            } else {
-                secaoInspecaoCarga.style.display = 'block';
-                secaoInspecaoExpedicao.style.display = 'block';
-            }
-        }
+    const secaoInspecaoCarga = document.getElementById('secao-inspecao-carga');
+    const secaoInspecaoExpedicao = document.getElementById('secao-inspecao-expedicao');
+    
+    if (tipoOperacao === 'recebimento') {
+        secaoInspecaoCarga.style.display = 'block';
+        secaoInspecaoExpedicao.style.display = 'none';
+    } else if (tipoOperacao === 'expedicao') {
+        secaoInspecaoCarga.style.display = 'none';
+        secaoInspecaoExpedicao.style.display = 'block';
+    } else {
+        // Quando nenhum tipo selecionado, mostra ambos
+        secaoInspecaoCarga.style.display = 'block';
+        secaoInspecaoExpedicao.style.display = 'block';
+    }
+}
         
         // Adicionar fotos
         function addPhotos() {
@@ -1211,7 +1318,7 @@
             document.getElementById('inspecao-exp-tambores').style.display = 'none';
             document.getElementById('tipo-carga').value = '';
             
-            showNotification('Formulário Salvo com sucesso!');
+            showNotification('Formulário Salvo com Sucesso!');
         }
         
         // SALVAR CHECKLIST
@@ -1288,53 +1395,92 @@
         }
         
         // Coletar dados do formulário - CORRIGIDA
-        function collectChecklistData() {
-            const id = 'CHK' + Date.now();
-            const tipoOperacao = document.getElementById('tipo-operacao').value;
-            const cliente = document.getElementById('cliente').value; // Novo campo
-            const data = document.getElementById('data').value;
-            const responsavel = document.getElementById('responsavel').value;
-            const tipoCarga = document.getElementById('tipo-carga').value;
-            const produto = document.getElementById('produto').value;
-            const lote = document.getElementById('lote').value;
-            const lacres = document.getElementById('lacres').value;
-            const validadeProduto = document.getElementById('validade-produto').value;
-            const serialChassi = document.getElementById('serial-chassi').value;
-            const modeloEquipamento = document.getElementById('modelo-equipamento').value;
-            const validadeTeste = document.getElementById('validade-teste').value;
-            const gpsFuncionando = document.getElementById('gps-funcionando').value;
-            const eslingaNumeracao = document.getElementById('eslinga-numeracao').value; // Novo campo
-            const eslingaValidade = document.getElementById('eslinga-validade').value; // Novo campo
-            const cargaSegura = document.querySelector('input[name="carga-segura"]:checked')?.value || 'NÃO INFORMADO';
-            const documentacao = document.querySelector('input[name="documentacao"]:checked')?.value || 'NÃO INFORMADO';
-            const status = document.querySelector('input[name="status-operacao"]:checked')?.value || 'NÃO DEFINIDO';
-            const observacoes = document.getElementById('observacoes-finais').value;
-            
-            // Coletar respostas das perguntas - CORRIGIDA: apenas perguntas visíveis
-            const respostas = {};
-            const tipoOperacaoAtual = document.getElementById('tipo-operacao').value;
-            
-            if (tipoOperacaoAtual === 'recebimento') {
-                // Coletar apenas perguntas de recebimento
-                const perguntasRec = document.querySelectorAll('#secao-inspecao-carga .checkbox-item');
-                perguntasRec.forEach((pergunta) => {
-                    if (pergunta.offsetParent !== null) { // Verifica se está visível
-                        const label = pergunta.querySelector('label').textContent;
-                        const resposta = pergunta.querySelector('input[type="radio"]:checked')?.value || 'NÃO RESPONDIDO';
-                        respostas[label] = resposta;
-                    }
-                });
-            } else if (tipoOperacaoAtual === 'expedicao') {
-                // Coletar apenas perguntas de expedição
-                const perguntasExp = document.querySelectorAll('#secao-inspecao-expedicao .checkbox-item');
-                perguntasExp.forEach((pergunta) => {
-                    if (pergunta.offsetParent !== null) { // Verifica se está visível
-                        const label = pergunta.querySelector('label').textContent;
-                        const resposta = pergunta.querySelector('input[type="radio"]:checked')?.value || 'NÃO RESPONDIDO';
-                        respostas[label] = resposta;
-                    }
-                });
+        // Coletar dados do formulário - CORRIGIDA
+function collectChecklistData() {
+    const id = 'CHK' + Date.now();
+    const tipoOperacao = document.getElementById('tipo-operacao').value;
+    const cliente = document.getElementById('cliente').value;
+    const data = document.getElementById('data').value;
+    const responsavel = document.getElementById('responsavel').value;
+    const tipoCarga = document.getElementById('tipo-carga').value;
+    const produto = document.getElementById('produto').value;
+    const lote = document.getElementById('lote').value;
+    const lacres = document.getElementById('lacres').value;
+    const validadeProduto = document.getElementById('validade-produto').value;
+    const serialChassi = document.getElementById('serial-chassi').value;
+    const modeloEquipamento = document.getElementById('modelo-equipamento').value;
+    const validadeTeste = document.getElementById('validade-teste').value;
+    const gpsFuncionando = document.getElementById('gps-funcionando').value;
+    const eslingaNumeracao = document.getElementById('eslinga-numeracao').value;
+    const eslingaValidade = document.getElementById('eslinga-validade').value;
+    const cargaSegura = document.querySelector('input[name="carga-segura"]:checked')?.value || 'NÃO INFORMADO';
+    const documentacao = document.querySelector('input[name="documentacao"]:checked')?.value || 'NÃO INFORMADO';
+    const status = document.querySelector('input[name="status-operacao"]:checked')?.value || 'NÃO DEFINIDO';
+    const observacoes = document.getElementById('observacoes-finais').value;
+    
+    // Coletar respostas das perguntas - CORRIGIDA
+    const respostas = {};
+    const tipoOperacaoAtual = document.getElementById('tipo-operacao').value;
+    
+    if (tipoOperacaoAtual === 'recebimento') {
+        // Coletar apenas perguntas de RECEBIMENTO (seção inspecao-carga)
+        const perguntasRec = document.querySelectorAll('#secao-inspecao-carga .checkbox-item');
+        perguntasRec.forEach((pergunta) => {
+            if (pergunta.offsetParent !== null) { // Verifica se está visível
+                const label = pergunta.querySelector('label').textContent;
+                const resposta = pergunta.querySelector('input[type="radio"]:checked')?.value || 'NÃO RESPONDIDO';
+                respostas[label] = resposta;
             }
+        });
+    } else if (tipoOperacaoAtual === 'expedicao') {
+        // Coletar apenas perguntas de EXPEDIÇÃO (seção inspecao-expedicao)
+        const perguntasExp = document.querySelectorAll('#secao-inspecao-expedicao .checkbox-item');
+        perguntasExp.forEach((pergunta) => {
+            if (pergunta.offsetParent !== null) { // Verifica se está visível
+                const label = pergunta.querySelector('label').textContent;
+                const resposta = pergunta.querySelector('input[type="radio"]:checked')?.value || 'NÃO RESPONDIDO';
+                respostas[label] = resposta;
+            }
+        });
+    }
+    
+    // Coletar fotos
+    const fotos = [];
+    const fotoElements = document.querySelectorAll('#fotos .photo-item img');
+    fotoElements.forEach(img => {
+        fotos.push(img.src);
+    });
+    
+    // Coletar assinatura
+    const assinatura = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
+    
+    return {
+        id,
+        tipo: tipoOperacao === 'recebimento' ? 'Recebimento' : 'Expedição',
+        cliente,
+        data,
+        responsavel,
+        tipoCarga,
+        produto,
+        lote,
+        lacres,
+        validadeProduto,
+        serialChassi,
+        modeloEquipamento,
+        validadeTeste,
+        gpsFuncionando,
+        eslingaNumeracao,
+        eslingaValidade,
+        cargaSegura,
+        documentacao,
+        respostas,
+        status,
+        observacoes,
+        assinatura,
+        fotos,
+        timestamp: new Date().toISOString()
+    };
+}
             
             // Coletar fotos
             const fotos = [];
@@ -1391,172 +1537,306 @@
             }, 3000);
         }
         
-        // Função para gerar PDF
-        function generatePDF(checklistId) {
-            const checklist = checklists.find(c => c.id === checklistId);
-            if (!checklist) {
-                showNotification('Checklist não encontrado!', 'error');
-                return;
-            }
-            
-            // Usando a biblioteca jsPDF
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Configurações
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const margin = 15;
-            let yPosition = margin;
-            
-            // Título
-            doc.setFontSize(20);
-            doc.setTextColor(51, 51, 51); // Cor secundária (preto)
-            doc.text(`Checklist Digital - ${checklist.tipo}`, pageWidth / 2, yPosition, { align: 'center' });
-            yPosition += 15;
-            
-            // Informações básicas
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0); // Preto
-            doc.text(`ID do Checklist: ${checklist.id}`, margin, yPosition);
-            doc.text(`Data: ${checklist.data}`, pageWidth - margin, yPosition, { align: 'right' });
-            yPosition += 8;
-            
-            doc.text(`Cliente: ${checklist.cliente || 'Não informado'}`, margin, yPosition);
-            doc.text(`Tipo de Carga: ${checklist.tipoCarga}`, pageWidth - margin, yPosition, { align: 'right' });
-            yPosition += 8;
-            
-            doc.text(`Responsável: ${checklist.responsavel || 'Não informado'}`, margin, yPosition);
-            doc.text(`Produto: ${checklist.produto || 'Não informado'}`, pageWidth - margin, yPosition, { align: 'right' });
-            yPosition += 8;
-            
-            doc.text(`Lote: ${checklist.lote || 'Não informado'}`, margin, yPosition);
-            doc.text(`Lacres: ${checklist.lacres || 'Não informado'}`, pageWidth - margin, yPosition, { align: 'right' });
-            yPosition += 8;
-            
-            doc.text(`Validade do Produto: ${checklist.validadeProduto || 'Não informado'}`, margin, yPosition);
-            doc.text(`Validade do Teste: ${checklist.validadeTeste || 'Não informado'}`, pageWidth - margin, yPosition, { align: 'right' });
-            yPosition += 15;
-            
-            // Dados da eslinga
-            doc.text(`Eslinga - Numeração: ${checklist.eslingaNumeracao || 'Não informado'}`, margin, yPosition);
-            yPosition += 8;
-            doc.text(`Eslinga - Validade: ${checklist.eslingaValidade || 'Não informado'}`, margin, yPosition);
-            yPosition += 15;
-            
-            // Dados específicos do tipo de checklist
-            if (checklist.tipo === 'Recebimento') {
-                doc.text(`Serial/Chassi: ${checklist.serialChassi || 'Não informado'}`, margin, yPosition);
-                yPosition += 8;
-                doc.text(`Modelo do Equipamento: ${checklist.modeloEquipamento || 'Não informado'}`, margin, yPosition);
-                yPosition += 8;
-                doc.text(`GPS Funcionando: ${checklist.gpsFuncionando || 'Não informado'}`, margin, yPosition);
-                yPosition += 15;
-            } else {
-                doc.text(`Carga Segura no Veículo: ${checklist.cargaSegura || 'Não informado'}`, margin, yPosition);
-                yPosition += 8;
-                doc.text(`Documentação Completa: ${checklist.documentacao || 'Não informado'}`, margin, yPosition);
-                yPosition += 15;
-            }
-            
-            // Respostas das perguntas
-            doc.setFontSize(14);
-            doc.setTextColor(255, 153, 0); // Cor de destaque (laranja)
-            doc.text('Respostas do Checklist:', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(10);
-            doc.setTextColor(0, 0, 0); // Preto
-            
-            for (const [pergunta, resposta] of Object.entries(checklist.respostas)) {
-                // Verificar se precisa de nova página
-                if (yPosition > 250) {
-                    doc.addPage();
-                    yPosition = margin;
-                }
-                
-                // Quebrar texto da pergunta se for muito longo
-                const lines = doc.splitTextToSize(pergunta, pageWidth - 2 * margin);
-                doc.text(lines, margin, yPosition);
-                yPosition += lines.length * 5;
-                
-                doc.text(`Resposta: ${resposta}`, margin + 5, yPosition);
-                yPosition += 10;
-            }
-            
-            // Status e observações
-            yPosition += 5;
-            doc.setFontSize(14);
-            doc.setTextColor(255, 153, 0); // Cor de destaque (laranja)
-            doc.text('Status e Observações:', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(10);
-            doc.setTextColor(0, 0, 0); // Preto
-            doc.text(`Status: ${checklist.status}`, margin, yPosition);
-            yPosition += 8;
-            
-            if (checklist.observacoes) {
-                const observacoesLines = doc.splitTextToSize(`Observações: ${checklist.observacoes}`, pageWidth - 2 * margin);
-                doc.text(observacoesLines, margin, yPosition);
-                yPosition += observacoesLines.length * 5;
-            }
-            
-            // Assinatura
-            if (checklist.assinatura) {
-                yPosition += 10;
-                doc.setFontSize(14);
-                doc.setTextColor(255, 153, 0); // Cor de destaque (laranja)
-                doc.text('Assinatura do Responsável:', margin, yPosition);
-                yPosition += 10;
-                
-                // Adicionar a assinatura (4x4 cm)
-                const signatureWidth = 40; // 4cm em mm (aproximadamente)
-                const signatureHeight = 40; // 4cm em mm (aproximadamente)
-                doc.addImage(checklist.assinatura, 'PNG', margin, yPosition, signatureWidth, signatureHeight);
-                yPosition += signatureHeight + 10;
-            }
-            
-            // Fotos (4x4 cm cada)
-            if (checklist.fotos.length > 0) {
-                // Nova página para fotos
-                doc.addPage();
-                yPosition = margin;
-                
-                doc.setFontSize(14);
-                doc.setTextColor(255, 153, 0); // Cor de destaque (laranja)
-                doc.text('Fotos do Checklist:', margin, yPosition);
-                yPosition += 15;
-                
-                const photoSize = 40; // 4x4 cm em mm
-                const photosPerRow = 2;
-                const photoMargin = 10;
-                
-                for (let i = 0; i < checklist.fotos.length; i++) {
-                    const row = Math.floor(i / photosPerRow);
-                    const col = i % photosPerRow;
-                    
-                    const x = margin + col * (photoSize + photoMargin);
-                    const y = yPosition + row * (photoSize + photoMargin);
-                    
-                    // Verificar se precisa de nova página
-                    if (y + photoSize > doc.internal.pageSize.getHeight() - margin) {
-                        doc.addPage();
-                        yPosition = margin;
-                        // Recalcular posição
-                        const newRow = Math.floor(i / photosPerRow) - row;
-                        const newY = yPosition + newRow * (photoSize + photoMargin);
-                        doc.addImage(checklist.fotos[i], 'JPEG', x, newY, photoSize, photoSize);
-                    } else {
-                        doc.addImage(checklist.fotos[i], 'JPEG', x, y, photoSize, photoSize);
-                    }
-                }
-            }
-            
-            // Salvar o PDF
-            doc.save(`checklist_${checklist.id}.pdf`);
-            showNotification('PDF gerado com sucesso!');
-        }
+// Função para gerar PDF
+function generatePDF(checklistId) {
+    const checklist = checklists.find(c => c.id === checklistId);
+    if (!checklist) {
+        showNotification('Checklist não encontrado!', 'error');
+        return;
+    }
+
+    // Usando a biblioteca jsPDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Configurações
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    let yPosition = margin;
+
+    // Adicionar logo da Tiger Rentank no cabeçalho
+    function addHeaderLogo() {
+        // Retângulo do logo (amarelo)
+        doc.setFillColor(255, 204, 0);
+        doc.rect(margin, 5, 40, 12, 'F');
         
+        // Texto do logo
+        doc.setFontSize(8);
+        doc.setTextColor(51, 51, 51);
+        doc.text('TIGER RENTANK', margin + 20, 12, { align: 'center' });
+        
+        // Linha decorativa abaixo do logo
+        doc.setDrawColor(255, 153, 0);
+        doc.setLineWidth(0.5);
+        doc.line(margin, 18, pageWidth - margin, 18);
+    }
+
+    // Adicionar cabeçalho em todas as páginas
+    function addHeader() {
+        addHeaderLogo();
+        
+        // Informações do cabeçalho
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Checklist: ${checklist.id}`, pageWidth - margin, 12, { align: 'right' });
+        doc.text(`Data: ${checklist.data}`, pageWidth - margin, 16, { align: 'right' });
+    }
+
+    // Adicionar rodapé em todas as páginas
+    function addFooter(pageNumber, totalPages) {
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Página ${pageNumber} de ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.text('Sistema de Checklist Digital - Tiger Rentank', pageWidth / 2, pageHeight - 5, { align: 'center' });
+    }
+
+    // Função para adicionar uma nova página com cabeçalho e rodapé
+    function addNewPage(pageNumber, totalPages) {
+        doc.addPage();
+        addHeader();
+        addFooter(pageNumber, totalPages);
+        return margin + 10;
+    }
+
+    // Adicionar cabeçalho na primeira página
+    addHeader();
+    addFooter(1, 1); // Inicialmente assumimos 1 página
+
+    // Título principal
+    doc.setFontSize(16);
+    doc.setTextColor(51, 51, 51);
+    doc.text(`CHECKLIST DE ${checklist.tipo.toUpperCase()}`, pageWidth / 2, yPosition + 15, { align: 'center' });
+    yPosition += 30;
+
+    // Informações básicas em duas colunas
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    
+    const col1 = margin;
+    const col2 = pageWidth / 2 + 10;
+    
+    // Coluna 1
+    doc.text(`Cliente: ${checklist.cliente || 'Não informado'}`, col1, yPosition);
+    doc.text(`Responsável: ${checklist.responsavel || 'Não informado'}`, col1, yPosition + 8);
+    doc.text(`Produto: ${checklist.produto || 'Não informado'}`, col1, yPosition + 16);
+    doc.text(`Lote: ${checklist.lote || 'Não informado'}`, col1, yPosition + 24);
+    
+    // Coluna 2
+    doc.text(`Tipo de Carga: ${checklist.tipoCarga}`, col2, yPosition);
+    doc.text(`Lacres: ${checklist.lacres || 'Não informado'}`, col2, yPosition + 8);
+    doc.text(`Validade Produto: ${checklist.validadeProduto || 'Não informado'}`, col2, yPosition + 16);
+    doc.text(`Validade Teste: ${checklist.validadeTeste || 'Não informado'}`, col2, yPosition + 24);
+    
+    yPosition += 40;
+
+    // Dados da eslinga
+    doc.setFontSize(11);
+    doc.setTextColor(255, 153, 0);
+    doc.text('INFORMAÇÕES DA ESLINGA:', margin, yPosition);
+    yPosition += 8;
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Numeração: ${checklist.eslingaNumeracao || 'Não informado'}`, margin, yPosition);
+    doc.text(`Data de Validade: ${checklist.eslingaValidade || 'Não informado'}`, margin + 60, yPosition);
+    yPosition += 15;
+
+    // Dados específicos do equipamento
+    doc.setFontSize(11);
+    doc.setTextColor(255, 153, 0);
+    doc.text('INSPEÇÃO DO EQUIPAMENTO:', margin, yPosition);
+    yPosition += 8;
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    
+    if (checklist.tipo === 'Recebimento') {
+        doc.text(`Serial/Chassi: ${checklist.serialChassi || 'Não informado'}`, col1, yPosition);
+        doc.text(`Modelo: ${checklist.modeloEquipamento || 'Não informado'}`, col2, yPosition);
+        yPosition += 8;
+        doc.text(`GPS: ${checklist.gpsFuncionando || 'Não informado'}`, col1, yPosition);
+    } else {
+        doc.text(`Carga Segura: ${checklist.cargaSegura || 'Não informado'}`, col1, yPosition);
+        doc.text(`Documentação: ${checklist.documentacao || 'Não informado'}`, col2, yPosition);
+    }
+    yPosition += 20;
+
+    // Respostas das perguntas
+    let currentPage = 1;
+    let totalPages = 1; // Será atualizado conforme necessário
+
+    doc.setFontSize(12);
+    doc.setTextColor(255, 153, 0);
+    doc.text('RESPOSTAS DO CHECKLIST:', margin, yPosition);
+    yPosition += 10;
+
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+
+    for (const [pergunta, resposta] of Object.entries(checklist.respostas)) {
+        // Verificar se precisa de nova página
+        if (yPosition > pageHeight - 50) {
+            currentPage++;
+            yPosition = addNewPage(currentPage, totalPages);
+            
+            // Retítulo para nova página
+            doc.setFontSize(12);
+            doc.setTextColor(255, 153, 0);
+            doc.text('RESPOSTAS DO CHECKLIST (continuação):', margin, yPosition);
+            yPosition += 10;
+            doc.setFontSize(9);
+        }
+
+        // Quebrar texto da pergunta se for muito longo
+        const lines = doc.splitTextToSize(`• ${pergunta}`, pageWidth - 2 * margin);
+        doc.text(lines, margin, yPosition);
+        yPosition += lines.length * 4;
+
+        // Resposta com destaque
+        doc.setFont(undefined, 'bold');
+        doc.text(`Resposta: ${resposta}`, margin + 5, yPosition);
+        doc.setFont(undefined, 'normal');
+        yPosition += 8;
+    }
+
+    // Atualizar total de páginas
+    totalPages = currentPage;
+
+    // Status e observações (sempre na última página)
+    if (yPosition > pageHeight - 80) {
+        currentPage++;
+        yPosition = addNewPage(currentPage, totalPages);
+        totalPages = currentPage;
+    }
+
+    yPosition += 10;
+    doc.setFontSize(12);
+    doc.setTextColor(255, 153, 0);
+    doc.text('STATUS E OBSERVAÇÕES FINAIS:', margin, yPosition);
+    yPosition += 10;
+
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    
+    // Status com destaque
+    doc.setFont(undefined, 'bold');
+    doc.text(`STATUS DA OPERAÇÃO: ${checklist.status}`, margin, yPosition);
+    doc.setFont(undefined, 'normal');
+    yPosition += 8;
+
+    if (checklist.observacoes) {
+        const observacoesLines = doc.splitTextToSize(`Observações: ${checklist.observacoes}`, pageWidth - 2 * margin);
+        doc.text(observacoesLines, margin, yPosition);
+        yPosition += observacoesLines.length * 4 + 5;
+    }
+
+    // Assinatura
+    if (checklist.assinatura) {
+        if (yPosition > pageHeight - 70) {
+            currentPage++;
+            yPosition = addNewPage(currentPage, totalPages);
+            totalPages = currentPage;
+        }
+
+        doc.setFontSize(12);
+        doc.setTextColor(255, 153, 0);
+        doc.text('ASSINATURA DO RESPONSÁVEL:', margin, yPosition);
+        yPosition += 8;
+
+        // Adicionar a assinatura (3x2 cm)
+        const signatureWidth = 60;
+        const signatureHeight = 20;
+        doc.addImage(checklist.assinatura, 'PNG', margin, yPosition, signatureWidth, signatureHeight);
+        
+        // Linha para assinatura
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.5);
+        doc.line(margin, yPosition + signatureHeight + 2, margin + signatureWidth, yPosition + signatureHeight + 2);
+        
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(checklist.responsavel || 'Responsável', margin, yPosition + signatureHeight + 6);
+        
+        yPosition += signatureHeight + 15;
+    }
+
+    // Fotos (em página separada se necessário)
+    if (checklist.fotos.length > 0) {
+        if (yPosition > pageHeight - 100) {
+            currentPage++;
+            yPosition = addNewPage(currentPage, totalPages);
+            totalPages = currentPage;
+        } else {
+            // Nova página para fotos para melhor organização
+            currentPage++;
+            yPosition = addNewPage(currentPage, totalPages);
+            totalPages = currentPage;
+        }
+
+        doc.setFontSize(12);
+        doc.setTextColor(255, 153, 0);
+        doc.text('REGISTRO FOTOGRÁFICO:', margin, yPosition);
+        yPosition += 15;
+
+        const photoSize = 40;
+        const photosPerRow = 2;
+        const photoMargin = 10;
+        let photoIndex = 0;
+
+        for (let i = 0; i < checklist.fotos.length; i++) {
+            const row = Math.floor(photoIndex / photosPerRow);
+            const col = photoIndex % photosPerRow;
+            
+            const x = margin + col * (photoSize + photoMargin);
+            const y = yPosition + row * (photoSize + photoMargin + 5);
+
+            // Verificar se precisa de nova página
+            if (y + photoSize > pageHeight - 30) {
+                currentPage++;
+                yPosition = addNewPage(currentPage, totalPages);
+                totalPages = currentPage;
+                photoIndex = 0;
+                // Redesenhar o título na nova página
+                doc.setFontSize(12);
+                doc.setTextColor(255, 153, 0);
+                doc.text('REGISTRO FOTOGRÁFICO (continuação):', margin, yPosition);
+                yPosition += 15;
+                continue; // Reiniciar o loop para a mesma foto
+            }
+
+            try {
+                doc.addImage(checklist.fotos[i], 'JPEG', x, y, photoSize, photoSize);
+                
+                // Moldura da foto
+                doc.setDrawColor(200, 200, 200);
+                doc.setLineWidth(0.3);
+                doc.rect(x, y, photoSize, photoSize);
+                
+                // Número da foto
+                doc.setFontSize(7);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Foto ${i + 1}`, x + 2, y + photoSize + 3);
+                
+                photoIndex++;
+            } catch (error) {
+                console.error('Erro ao adicionar foto:', error);
+            }
+        }
+    }
+
+    // Atualizar números de página em todas as páginas
+    for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+    }
+
+    // Salvar o PDF
+    doc.save(`checklist_${checklist.id}_tiger_rentank.pdf`);
+    showNotification('PDF Gerado com Sucesso!');
+}        
         // Função para atualizar a lista de histórico
         function updateHistoryList() {
             const historyList = document.getElementById('history-list');
